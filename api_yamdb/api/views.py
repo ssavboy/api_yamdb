@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from api_yamdb.reviews.models import Review
+from reviews.models import Review
 
 from .serializers import CategoriesSerializer, GenreSerializer, ReviewSerializer, TitleSerializer
 from .serializers import CommentSerializer, ReviewSerializer

@@ -1,5 +1,6 @@
 from django.db import models
 
+from users.models import User
 
 class Category(models.Model):
     name = models.CharField(max_length=30)
@@ -34,6 +35,8 @@ class Title(models.Model):
 # MAXIMUM_SCORE = 10
 # SCORE_CHOICES = range(1, MAXIMUM_SCORE)
 OUTPUT_LIMIT = 60
+
+
 class Review(models.Model):
     """Описание модели Review."""
     review = models.TextField(max_length=3000)
@@ -42,9 +45,9 @@ class Review(models.Model):
         default='5'
     )
 # написать валидатор на максимальное значение    ???? 
-#    author = models.ForeignKey(
-#        'User', on_delete=models.CASCADE, related_name='reviews'
-#    )
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='reviews', default='admin',
+    )
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -53,8 +56,10 @@ class Review(models.Model):
     pub_date = models.DateTimeField(
         'Дата создания', auto_now_add=True
     )
+
     class Meta:
         ordering = ('pub_date',)
+
     def __str__(self):
         return self.review[:OUTPUT_LIMIT]
 
@@ -67,16 +72,19 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         related_name='comments'
     )
-#    author = models.ForeignKey(
-#        'User',
-#        on_delete=models.CASCADE,
-#        related_name='comments'
-#    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        default='admin',
+    )
     pub_date = models.DateTimeField(
         'Дата создания', auto_now_add=True
     )
+
     class Meta:
         ordering = ('pub_date',)
+
     def __str__(self):
         return self.review[:OUTPUT_LIMIT]
 
