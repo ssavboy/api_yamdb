@@ -1,6 +1,6 @@
 from django.db import models
 
-
+from users.models import User
 
 class Category(models.Model):
     name = models.CharField(max_length=30)
@@ -32,20 +32,24 @@ class Title(models.Model):
         return self.name
 
 # перенести константы в settings
-MAXIMUM_SCORE = 10
-SCORE_CHOICES = range(1, MAXIMUM_SCORE)
+# MAXIMUM_SCORE = 10
+# SCORE_CHOICES = range(1, MAXIMUM_SCORE)
+OUTPUT_LIMIT = 60
+
 
 class Review(models.Model):
     """Описание модели Review."""
-
     review = models.TextField(max_length=3000)
-    score = models.PositiveSmallIntegerField(choices=SCORE_CHOICES)
+    score = models.IntegerField(
+        choices=[(x, str(x)) for x in range(1,25)],
+        default='5'
+    )
 # написать валидатор на максимальное значение    ???? 
     author = models.ForeignKey(
-        'User', on_delete=models.CASCADE, related_name='reviews'
+        User, on_delete=models.CASCADE, related_name='reviews', default='admin',
     )
     title = models.ForeignKey(
-        'Title',
+        Title,
         on_delete=models.CASCADE,
         related_name='reviews'
     )
@@ -53,10 +57,15 @@ class Review(models.Model):
         'Дата создания', auto_now_add=True
     )
 
+    class Meta:
+        ordering = ('pub_date',)
+
+    def __str__(self):
+        return self.review[:OUTPUT_LIMIT]
+
 
 class Comment(models.Model):
     """Описание модели Comment."""
-
     comment = models.TextField(max_length=3000)
     review = models.ForeignKey(
         Review,
@@ -64,13 +73,18 @@ class Comment(models.Model):
         related_name='comments'
     )
     author = models.ForeignKey(
-        'User',
+        User,
         on_delete=models.CASCADE,
-        related_name='comments'
+        related_name='comments',
+        default='admin',
     )
     pub_date = models.DateTimeField(
         'Дата создания', auto_now_add=True
     )
 
+    class Meta:
+        ordering = ('pub_date',)
 
-    pass
+    def __str__(self):
+        return self.review[:OUTPUT_LIMIT]
+
