@@ -1,59 +1,54 @@
-# API_FINAL_YATUBE
-
-### Описание
-
-#### ***Задачи, которые решает данный проект:***
-
-- Публикации постов
-- Подписки на интересных пользователей
-- Возможность комменитровать интересные посты
-- Находить определённых людей по интересам (группы)
-- Возможность поиска по параметрам
-
-### Установка
-#### ***Как запустить проект:***
-
+## Описание
+API социальной сети Yatube
+##### API представляет следущие возможности:
+* Подписываться/Отписываться на/от пользователя.
+* Просматривать, создавать новые, удалять и изменять посты.
+* Просматривать и создавать группы.
+* Комментировать, смотреть, удалять и обновлять комментарии.
+* Фильтровать выдачу.
+## Установка 
+Клонируем репозиторий на локальную машину:
+### Как запустить проект:
 Клонировать репозиторий и перейти в него в командной строке:
 
-```git clone https://github.com/yandex-praktikum/api_final_yatube.git```
+```
+git clone https://github.com/ssavboy/api_final_yatube.git
+```
 
-```cd api_final_yatube```
+```
+cd yatube_api
+```
 
 Cоздать и активировать виртуальное окружение:
 
-```python3 -m venv env```
+```
+python3 -m venv venv (GNU/Linux)
+```
 
-```source env/bin/activate```
+```
+source venv/bin/activate (GNU/Linux)
+source venv/Scripts/activate (Windows)
+```
 
 Установить зависимости из файла requirements.txt:
 
-```python3 -m pip install --upgrade pip```
+```
+python3 -m pip install --upgrade pip
+```
 
-```pip install -r requirements.txt```
+```
+pip install -r requirements.txt
+```
 
 Выполнить миграции:
 
-```python3 manage.py migrate```
+```
+python3 manage.py migrate
+```
 
 Запустить проект:
 
-```python3 manage.py runserver```
-
-### Примеры
-#### ***Несколько примеров, запросов, к API:***
 ```
-
-GET api/v1/posts/ - получить список всех публикаций.
-При указании параметров limit и offset выдача должна работать с пагинацией
-GET api/v1/posts/{id}/ - получение публикации по id
-
-GET api/v1/groups/ - получение списка доступных сообществ
-GET api/v1/groups/{id}/ - получение информации о сообществе по id
-
-GET api/v1/{post_id}/comments/ - получение всех комментариев к публикации
-GET api/v1/{post_id}/comments/{id}/ - Получение комментария к публикации по id
-
-GET api/v1/follow/ - Возвращает все подписки пользователя, сделавшего запрос
-GET redoc/ - Документация к API проекта Yatube (v1)
-
+python3 manage.py runserver
 ```
+#### Документация API `http://localhost:8000/redoc/`
