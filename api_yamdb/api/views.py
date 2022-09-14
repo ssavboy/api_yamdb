@@ -23,10 +23,10 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    queryset=Review.objects.all()
-    serializer_class=ReviewSerializer
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset=Comment.objects.all()
-    serializer_class=CommentSerializer
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer

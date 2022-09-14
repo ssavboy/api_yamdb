@@ -34,6 +34,8 @@ class Title(models.Model):
 # перенести константы в settings
 # MAXIMUM_SCORE = 10
 # SCORE_CHOICES = range(1, MAXIMUM_SCORE)
+
+
 OUTPUT_LIMIT = 60
 
 
@@ -41,12 +43,14 @@ class Review(models.Model):
     """Описание модели Review."""
     review = models.TextField(max_length=3000)
     score = models.IntegerField(
-        choices=[(x, str(x)) for x in range(1,25)],
+        choices=[(x, str(x)) for x in range(1, 25)],
         default='5'
     )
-# написать валидатор на максимальное значение    ???? 
+# написать валидатор на максимальное значение    ????
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='reviews', default='admin',
+        User, on_delete=models.CASCADE,
+        related_name='reviews',
+        default='admin',
     )
     title = models.ForeignKey(
         Title,
@@ -87,4 +91,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.review[:OUTPUT_LIMIT]
-

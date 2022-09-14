@@ -32,6 +32,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
 
+
 class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:

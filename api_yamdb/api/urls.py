@@ -5,7 +5,8 @@ from .views import (
     CategoriesViewSet,
     GenreViewSet,
     TitleViewSet,
-    ReviewViewSet
+    ReviewViewSet,
+    CommentViewSet
 )
 
 app_name = 'api'
