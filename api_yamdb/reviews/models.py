@@ -1,5 +1,5 @@
 from django.db import models
-
+from users.models import User
 
 
 class Category(models.Model):
@@ -39,10 +39,10 @@ class Review(models.Model):
     """Описание модели Review."""
 
     review = models.TextField(max_length=3000)
-    score = models.PositiveSmallIntegerField(choices=SCORE_CHOICES)
-# написать валидатор на максимальное значение    ???? 
+    score = models.IntegerField(
+        verbose_name='score')
     author = models.ForeignKey(
-        'User', on_delete=models.CASCADE, related_name='reviews'
+        User, on_delete=models.CASCADE, related_name='reviews'
     )
     title = models.ForeignKey(
         'Title',
@@ -64,7 +64,7 @@ class Comment(models.Model):
         related_name='comments'
     )
     author = models.ForeignKey(
-        'User',
+        User,
         on_delete=models.CASCADE,
         related_name='comments'
     )
