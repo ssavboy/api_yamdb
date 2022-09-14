@@ -15,6 +15,7 @@ class User(AbstractUser):
     """UserModel
     Args:
         AbstractUser (_type_): _description_
+
     Returns:
         _type_: _description_
     """

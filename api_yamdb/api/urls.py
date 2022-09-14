@@ -4,11 +4,12 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     CategoriesViewSet,
     GenreViewSet,
-    TitleViewSet
+    TitleViewSet,
+    ReviewViewSet
 )
-from .views import CommentViewSet, ReviewViewSet
 
 app_name = 'api'
+
 
 router_v1 = DefaultRouter()
 router_v1.register('categories', CategoriesViewSet, basename='categories')
