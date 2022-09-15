@@ -8,7 +8,7 @@ router_v1.register('users', UserViewSet, basename='users')
 
 auth_urls = [
     path('signup/', SignUpView.as_view()),
-    path('token/', TokenView.as_view())
+    path('token/', TokenView.as_view()),
 ]
 
 urlpatterns = [
