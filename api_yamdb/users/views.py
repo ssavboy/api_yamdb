@@ -13,8 +13,6 @@ from .models import User
 from .permissions import IsAdmin
 from .serializers import SignUpSerializer, TokenSerializer, UserSerializer
 
-codegen = default_token_generator
-
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -53,15 +51,13 @@ class SignUpView(APIView):
             email=email,
             username=username
         )
-        confirm_token = codegen.make_token(user)
-        mail_subject = 'Your verification token'
-        message = f'Confirmation token - {confirm_token}'
-
+        confirm_token = default_token_generator.make_token(user)
+        print(confirm_token)
         send_mail(
-            mail_subject,
-            message,
-            'example@mail.com',
-            (email,)
+            subject='Your verification token',
+            message=f'Confirm token - "{confirm_token}".',
+            from_email='yamdb@mail.com',
+            recipient_list=(email,)
         )
 
         return Response(
@@ -70,21 +66,21 @@ class SignUpView(APIView):
 
 
 class TokenView(APIView):
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         serializer = TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        confir_token = serializer.validated_data.get('confir_token')
+        confirm_token = serializer.validated_data.get('confirm_token')
         username = serializer.validated_data.get('username')
         user = get_object_or_404(User, username=username)
 
-        if codegen.check_token(user, confir_token):
+        if default_token_generator.check_token(user, confirm_token):
             user.is_active = True
             user.save()
             token = AccessToken.for_user(user)
             return Response({'token': f'{token}'}, status=status.HTTP_200_OK)
 
         return Response(
-            {'confir_token': ['Invalid code!']},
+            {'confirm_token': ['Invalid token!']},
             status=status.HTTP_400_BAD_REQUEST)
