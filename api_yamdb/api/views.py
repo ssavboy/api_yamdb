@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions, filters
 
 from .serializers import CategoriesSerializer, CommentSerializer
 from .serializers import GenreSerializer, TitleSerializer
@@ -19,6 +19,9 @@ class CategoriesViewSet(viewsets.ModelViewSet):
 
     queryset = Category.objects.all()
     serializer_class = CategoriesSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
