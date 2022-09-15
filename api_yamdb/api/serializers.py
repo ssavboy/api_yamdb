@@ -11,18 +11,24 @@ from reviews.models import (
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
+    """Описание сериализатора для модели Category."""
+
     class Meta:
         model = Category
         fields = '__all__'
 
 
 class GenreSerializer(serializers.ModelSerializer):
+    """Описание сериализатора для модели Genre."""
+
     class Meta:
         model = Genre
         fields = '__all__'
 
 
 class TitleSerializer(serializers.ModelSerializer):
+    """Описание сериализатора для модели Title."""
+
     genre = serializers.SlugRelatedField(many=True, slug_field='slug',
                                          queryset=Genre.objects.all())
     category = serializers.SlugRelatedField(slug_field='slug',
@@ -34,6 +40,8 @@ class TitleSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """Описание сериализатора для модели Review."""
+
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True,
@@ -52,8 +60,17 @@ class ReviewSerializer(serializers.ModelSerializer):
             )
         ]
 
+    def validate_score(self, value):
+        if value > 10:
+            raise serializers.ValidationError(
+                'Оценка произведения должна быть в пределах 10'
+            )
+        return value
+
 
 class CommentSerializer(serializers.ModelSerializer):
+    """Описание сериализатора для модели Comment."""
+
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True,
