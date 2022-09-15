@@ -2,10 +2,10 @@ from rest_framework import serializers
 from rest_framework.serializers import UniqueTogetherValidator
 
 from reviews.models import (
-    Category, 
-    Comment, 
-    Genre, 
-    Review, 
+    Category,
+    Comment,
+    Genre,
+    Review,
     Title
 )
 
@@ -51,6 +51,7 @@ class ReviewSerializer(serializers.ModelSerializer):
                 message='Можно написать только одну рецензию на произведение.',
             )
         ]
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(

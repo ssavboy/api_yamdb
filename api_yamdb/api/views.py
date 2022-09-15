@@ -2,13 +2,13 @@ from rest_framework import viewsets
 from reviews.models import Review
 
 from .serializers import CategoriesSerializer, CommentSerializer
-from .serializers import GenreSerializer,TitleSerializer
-from .serializers import  ReviewSerializer
+from .serializers import GenreSerializer, TitleSerializer
+from .serializers import ReviewSerializer
 from reviews.models import (
     Category,
     Comment,
     Genre,
-    Review,   
+    Review,
     Title
 )
 
