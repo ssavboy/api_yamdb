@@ -1,9 +1,5 @@
 from django.db import models
-<<<<<<< HEAD
-=======
-
 from api_yamdb import settings
->>>>>>> 3ade70c0167669c77d920b7520684a7f9cb96783
 from users.models import User
 
 
@@ -35,9 +31,6 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
-
-
-
 
 
 class Review(models.Model):
