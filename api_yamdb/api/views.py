@@ -1,14 +1,17 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .serializers import CategoriesSerializer, CommentSerializer
 from .serializers import GenreSerializer, TitleSerializer
-from .serializers import ReviewSerializer
+from .serializers import ReviewSerializer, ReadOnlyTitleSerializer
 from reviews.models import Category, Genre, Title
 from .permissions import IsAdminOrReadOnly
+from .filters import TitlesFilter
+from .mixins import ListCreateDestroyViewSet
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(ListCreateDestroyViewSet):
     """Вьюсет для запросов к объектам Genre."""
 
     queryset = Genre.objects.all()
@@ -16,9 +19,10 @@ class GenreViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    lookup_field = 'slug'
 
 
-class CategoriesViewSet(viewsets.ModelViewSet):
+class CategoriesViewSet(ListCreateDestroyViewSet):
     """Вьюсет для запросов к объектам Category."""
 
     queryset = Category.objects.all()
@@ -26,6 +30,7 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -34,6 +39,13 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TitlesFilter
+
+    def get_serializer_class(self):
+        if self.action in ('retrieve', 'list'):
+            return ReadOnlyTitleSerializer
+        return TitleSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
