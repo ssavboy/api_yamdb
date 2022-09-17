@@ -2,11 +2,10 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import status, viewsets, permissions
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 
 from .models import User
@@ -39,48 +38,41 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class SignUpView(APIView):
-    permission_classes = (AllowAny,)
+@api_view(["POST"])
+@permission_classes([permissions.AllowAny])
+def register(request):
+    serializer = SignUpSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    user = get_object_or_404(
+        User,
+        username=serializer.validated_data["username"]
+    )
+    confirmation_code = default_token_generator.make_token(user)
+    send_mail(
+        subject="YaMDb registration",
+        message=f"Your confirmation code: {confirmation_code}",
+        from_email=None,
+        recipient_list=[user.email],
+    )
 
-    def post(self, request):
-        serializer = SignUpSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        email = serializer.validated_data.get('email')
-        username = serializer.validated_data.get('username')
-        user = User.objects.get_or_create(
-            email=email,
-            username=username
-        )
-        confirm_token = default_token_generator.make_token(user)
-        print(confirm_token)
-        send_mail(
-            subject='Your verification token',
-            message=f'Confirm token - "{confirm_token}".',
-            from_email='yamdb@mail.com',
-            recipient_list=(email,)
-        )
-
-        return Response(
-            {'email': email, 'username': username},
-            status=status.HTTP_200_OK)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class TokenView(APIView):
-    permission_classes = (AllowAny,)
+@api_view(["POST"])
+@permission_classes([permissions.AllowAny])
+def get_jwt_token(request):
+    serializer = TokenSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = get_object_or_404(
+        User,
+        username=serializer.validated_data["username"]
+    )
 
-    def post(self, request):
-        serializer = TokenSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        confirm_token = serializer.validated_data.get('confirm_token')
-        username = serializer.validated_data.get('username')
-        user = get_object_or_404(User, username=username)
+    if default_token_generator.check_token(
+        user, serializer.validated_data["confirmation_code"]
+    ):
+        token = AccessToken.for_user(user)
+        return Response({"token": str(token)}, status=status.HTTP_200_OK)
 
-        if codegen.check_token(user, confirm_token):
-            user.is_active = True
-            user.save()
-            token = AccessToken.for_user(user)
-            return Response({'token': f'{token}'}, status=status.HTTP_200_OK)
-
-        return Response(
-            {'confirm_token': ['Invalid code!']},
-            status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

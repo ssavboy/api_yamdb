@@ -52,7 +52,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для запросов к объектам Review."""
 
     serializer_class = ReviewSerializer
-#    queryset = Review.objects.all()
+    queryset = Review.objects.all()
 
     def get_title(self):
         """Определение объекта Title, связанного с Review."""
@@ -67,7 +67,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Переопределение метода создания объекта Review."""
         serializer.save(
-#            author=self.request.user,
+            author=self.request.user,
             title=self.get_title()
         )
 
@@ -93,6 +93,6 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Переопределение метода создания объекта Comment."""
         serializer.save(
-#            author=self.request.user,
+            author=self.request.user,
             review=self.get_review()
         )
