@@ -35,12 +35,13 @@ class Title(models.Model):
 
 class Review(models.Model):
     """Описание модели Review."""
-    text = models.TextField(max_length=3000)
+
+    review = models.TextField(max_length=3000)
     score = models.PositiveSmallIntegerField()
-#    author = models.ForeignKey(
-#        User, on_delete=models.CASCADE,
-#        related_name='reviews'
-#    )
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        related_name='reviews',
+    )
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -65,11 +66,11 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         related_name='comments'
     )
-#    author = models.ForeignKey(
-#        User,
-#        on_delete=models.CASCADE,
-#        related_name='comments'
-#    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='comments',
+    )
     pub_date = models.DateTimeField(
         'Дата создания', auto_now_add=True
     )
