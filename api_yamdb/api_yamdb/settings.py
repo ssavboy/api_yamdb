@@ -110,8 +110,16 @@ REST_FRAMEWORK = {
 
 OUTPUT_LIMIT = 300
 
+<<<<<<< HEAD
 SIMPLE_JWT = {
 
    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
    'AUTH_HEADER_TYPES': ('Bearer',),
 }
+=======
+#SIMPLE_JWT = {
+#    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+#    'AUTH_HEADER_TYPES': ('Bearer',),
+#}
+
+>>>>>>> cca0c517d865d14422d3af979c2de2cc09d0daef
