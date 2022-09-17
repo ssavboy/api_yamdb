@@ -47,7 +47,7 @@ class SignUpView(APIView):
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data.get('email')
         username = serializer.validated_data.get('username')
-        user, is_created = User.objects.get_or_create(
+        user = User.objects.get_or_create(
             email=email,
             username=username
         )
@@ -75,12 +75,12 @@ class TokenView(APIView):
         username = serializer.validated_data.get('username')
         user = get_object_or_404(User, username=username)
 
-        if default_token_generator.check_token(user, confirm_token):
+        if codegen.check_token(user, confirm_token):
             user.is_active = True
             user.save()
             token = AccessToken.for_user(user)
             return Response({'token': f'{token}'}, status=status.HTTP_200_OK)
 
         return Response(
-            {'confirm_token': ['Invalid token!']},
+            {'confirm_token': ['Invalid code!']},
             status=status.HTTP_400_BAD_REQUEST)

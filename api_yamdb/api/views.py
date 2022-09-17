@@ -5,7 +5,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import CategoriesSerializer, CommentSerializer
 from .serializers import GenreSerializer, TitleSerializer
 from .serializers import ReviewSerializer, ReadOnlyTitleSerializer
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Review
 from .permissions import IsAdminOrReadOnly
 from .filters import TitlesFilter
 from .mixins import ListCreateDestroyViewSet
@@ -52,19 +52,22 @@ class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для запросов к объектам Review."""
 
     serializer_class = ReviewSerializer
+#    queryset = Review.objects.all()
 
     def get_title(self):
         """Определение объекта Title, связанного с Review."""
+        print('id=', self.kwargs.get('title_id'))
         return get_object_or_404(Title, pk=self.kwargs.get('title_id'))
 
     def get_queryset(self):
         """Определение множества объектов Review."""
+        print('id=', self.kwargs.get('title_id'))
         return self.get_title().reviews.select_related('title')
 
     def perform_create(self, serializer):
         """Переопределение метода создания объекта Review."""
         serializer.save(
-            author=self.request.user,
+#            author=self.request.user,
             title=self.get_title()
         )
 
@@ -77,11 +80,10 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_review(self):
         """Определение объекта Review, связанного с Comment."""
 
-        return (
-            Title.objects.select_related
-            ('review').filter
-            (pk=self.kwargs.get('title_id')).filter
-            (reviews=self.kwargs.get('review_id'))
+        return get_object_or_404(
+            Review,
+            pk=self.kwargs.get('review_id'),
+            title=self.kwargs.get('title_id')
         )
 
     def get_queryset(self):
@@ -91,6 +93,6 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Переопределение метода создания объекта Comment."""
         serializer.save(
-            author=self.request.user,
+#            author=self.request.user,
             review=self.get_review()
         )
