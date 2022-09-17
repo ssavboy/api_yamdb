@@ -23,10 +23,11 @@ class SignUpSerializer(serializers.Serializer):
         if data.lower() == 'me':
             raise ValidationError(message='username cannot equal "me".')
         return data
-    
+
     class Meta:
         model = User
         fields = ('username', 'email')
+
 
 class TokenSerializer(serializers.ModelSerializer):
     username = serializers.CharField(required=True)
