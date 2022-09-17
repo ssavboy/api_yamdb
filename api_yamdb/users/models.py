@@ -8,7 +8,7 @@ MODERATOR = 'moderator'
 ROLES = (
     (USER, 'User'),
     (ADMIN, 'Moderator'),
-    (MODERATOR, 'Admin'),)
+    (MODERATOR, 'Admin'))
 
 
 class User(AbstractUser):
@@ -33,12 +33,12 @@ class User(AbstractUser):
         blank=True,
         null=True)
     role = models.CharField(
-        max_length=20,
+        max_length=10,
         choices=ROLES,
         default=USER,
         blank=True)
     confirm_code = models.CharField(
-        max_length=70,
+        max_length=100,
         unique=True,
         blank=True,
         null=True)
