@@ -6,3 +6,21 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         return (request.method in permissions.SAFE_METHODS
                 or (request.user.is_authenticated and (
                     request.user.is_admin or request.user.is_superuser)))
+<<<<<<< HEAD
+
+
+class IsAuthorModeratorAdminOrReadOnly(permissions.BasePermission):
+    """Этот класс используется для определения
+    кастомных полномочий для разрешения редактирования, удаления
+    объекта автором, модератором, администритором.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        """Разрешение на редактирование, удаление объекта."""
+        return (
+            obj.author == request.user or request.user.is_moderator
+            or request.user.is_admin
+            or request.method in permissions.SAFE_METHODS
+        )
+=======
+>>>>>>> cca0c517d865d14422d3af979c2de2cc09d0daef
