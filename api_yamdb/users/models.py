@@ -37,7 +37,7 @@ class User(AbstractUser):
         choices=ROLES,
         default=USER,
         blank=True)
-    confirm_code = models.CharField(
+    confirm_token = models.CharField(
         max_length=100,
         unique=True,
         blank=True,

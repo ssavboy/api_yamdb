@@ -21,7 +21,7 @@ class IsModerator(permissions.BasePermission):
         return request.user.is_authenticated and request.user.is_moderator
 
 
-class IsSuperUser(permissions.BasePermission):
+class IsSuperuser(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.is_superuser
 
