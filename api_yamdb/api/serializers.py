@@ -42,23 +42,23 @@ class TitleSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     """Описание сериализатора для модели Review."""
 
-    author = serializers.SlugRelatedField(
-        slug_field='username',
-        read_only=True,
-    )
-    title = serializers.StringRelatedField()
+#    author = serializers.SlugRelatedField(
+#        slug_field='username',
+#        read_only=True,
+#    )
+#    title = serializers.StringRelatedField()
 
     class Meta:
         model = Review
         fields = '__all__'
         read_only_fields = ('title',)
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Review.objects.all(),
-                fields=('author', 'title'),
-                message='Можно написать только одну рецензию на произведение.',
-            )
-        ]
+#        validators = [
+#            UniqueTogetherValidator(
+#                queryset=Review.objects.all(),
+#                fields=('author', 'title'),
+#                message='Можно написать только одну рецензию на произведение.',
+#            )
+#        ]
 
     def validate_score(self, value):
         if value > 10:
@@ -71,10 +71,10 @@ class ReviewSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     """Описание сериализатора для модели Comment."""
 
-    author = serializers.SlugRelatedField(
-        slug_field='username',
-        read_only=True,
-    )
+#    author = serializers.SlugRelatedField(
+#        slug_field='username',
+#        read_only=True,
+#    )
     review = serializers.StringRelatedField()
 
     class Meta:

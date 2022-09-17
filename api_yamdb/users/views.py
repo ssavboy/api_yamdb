@@ -49,7 +49,7 @@ class SignUpView(APIView):
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data.get('email')
         username = serializer.validated_data.get('username')
-        user, is_created = User.objects.get_or_create(
+        user = User.objects.get_or_create(
             email=email,
             username=username
         )
@@ -75,16 +75,17 @@ class TokenView(APIView):
     def post(self, request):
         serializer = TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        confir_token = serializer.validated_data.get('confir_token')
+        confirm_token = serializer.validated_data.get('confirm_token')
         username = serializer.validated_data.get('username')
         user = get_object_or_404(User, username=username)
 
-        if codegen.check_token(user, confir_token):
+        print('code', codegen.check_token(user, confirm_token))
+        if codegen.check_token(user, confirm_token):
             user.is_active = True
             user.save()
             token = AccessToken.for_user(user)
             return Response({'token': f'{token}'}, status=status.HTTP_200_OK)
 
         return Response(
-            {'confir_token': ['Invalid code!']},
+            {'confirm_token': ['Invalid code!']},
             status=status.HTTP_400_BAD_REQUEST)
