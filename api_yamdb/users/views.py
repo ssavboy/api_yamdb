@@ -38,41 +38,44 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-@api_view(["POST"])
-@permission_classes([permissions.AllowAny])
-def register(request):
-    serializer = SignUpSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
-    user = get_object_or_404(
-        User,
-        username=serializer.validated_data["username"]
-    )
-    confirmation_code = default_token_generator.make_token(user)
-    send_mail(
-        subject="YaMDb registration",
-        message=f"Your confirmation code: {confirmation_code}",
-        from_email=None,
-        recipient_list=[user.email],
-    )
+class SignUpView(APIView):
+    permission_classes = (AllowAny,)
 
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    def post(self, request):
+        serializer = SignUpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data.get('email')
+        username = serializer.validated_data.get('username')
+        user, is_created = User.objects.get_or_create(
+            email=email,
+            username=username)
+        confirm_token = default_token_generator.make_token(user)
+        send_mail(
+            subject='Your verification token',
+            message=f'Confirm token - "{confirm_token}".',
+            from_email='yamdb@mail.com',
+            recipient_list=(email,))
+        return Response(
+            {'email': email, 'username': username},
+            status=status.HTTP_200_OK)
 
 
-@api_view(["POST"])
-@permission_classes([permissions.AllowAny])
-def get_jwt_token(request):
-    serializer = TokenSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    user = get_object_or_404(
-        User,
-        username=serializer.validated_data["username"]
-    )
+class TokenView(APIView):
+    permission_classes = (AllowAny,)
+    def post(self, request):
+        print('------------post------------')
+        serializer = TokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        confirm_token = serializer.validated_data.get('confirm_token')
+        username = serializer.validated_data.get('username')
+        user = get_object_or_404(User, username=username)
 
-    if default_token_generator.check_token(
-        user, serializer.validated_data["confirmation_code"]
-    ):
-        token = AccessToken.for_user(user)
-        return Response({"token": str(token)}, status=status.HTTP_200_OK)
+        if default_token_generator.check_token(user, confirm_token):
+            user.is_active = True
+            user.save()
+            token = AccessToken.for_user(user)
+            return Response({'token': f'{token}'}, status=status.HTTP_200_OK)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {'confirm_token': ['Invalid token!']},
+            status=status.HTTP_400_BAD_REQUEST)
