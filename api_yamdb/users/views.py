@@ -47,19 +47,15 @@ class SignUpView(APIView):
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data.get('email')
         username = serializer.validated_data.get('username')
-        user = User.objects.get_or_create(
+        user, is_created = User.objects.get_or_create(
             email=email,
-            username=username
-        )
+            username=username)
         confirm_token = default_token_generator.make_token(user)
-        print(confirm_token)
         send_mail(
             subject='Your verification token',
             message=f'Confirm token - "{confirm_token}".',
             from_email='yamdb@mail.com',
-            recipient_list=(email,)
-        )
-
+            recipient_list=(email,))
         return Response(
             {'email': email, 'username': username},
             status=status.HTTP_200_OK)
@@ -67,20 +63,20 @@ class SignUpView(APIView):
 
 class TokenView(APIView):
     permission_classes = (AllowAny,)
-
     def post(self, request):
+        print('------------post------------')
         serializer = TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         confirm_token = serializer.validated_data.get('confirm_token')
         username = serializer.validated_data.get('username')
         user = get_object_or_404(User, username=username)
 
-        if codegen.check_token(user, confirm_token):
+        if default_token_generator.check_token(user, confirm_token):
             user.is_active = True
             user.save()
             token = AccessToken.for_user(user)
             return Response({'token': f'{token}'}, status=status.HTTP_200_OK)
 
         return Response(
-            {'confirm_token': ['Invalid code!']},
+            {'confirm_token': ['Invalid token!']},
             status=status.HTTP_400_BAD_REQUEST)
