@@ -53,13 +53,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для запросов к объектам Review."""
 
     serializer_class = ReviewSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-    def get_permissions(self):
-        """Выбор разрешений исходя из типа запроса"""
-        if self.action == 'destroy' or self.action == 'update':
-            return (IsAuthorModeratorAdminOrReadOnly(),)
-        return super().get_permissions()
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+        IsAuthorModeratorAdminOrReadOnly,
+    )
 
     def get_title(self):
         """Определение объекта Title, связанного с Review."""
@@ -71,23 +68,21 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Переопределение метода создания объекта Review."""
-        serializer.save(
-            author=self.request.user,
-            title=self.get_title()
-        )
+        if serializer.is_valid:
+            serializer.save(
+                author=self.request.user,
+                title=self.get_title()
+            )
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     """Вьюсет для запросов к объектам Comment."""
 
     serializer_class = CommentSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-    def get_permissions(self):
-        """Выбор разрешений исходя из типа запроса"""
-        if self.action == 'destroy' or self.action == 'update':
-            return (IsAuthorModeratorAdminOrReadOnly(),)
-        return super().get_permissions()  
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+        IsAuthorModeratorAdminOrReadOnly
+    )
 
     def get_review(self):
         """Определение объекта Review, связанного с Comment."""

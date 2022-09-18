@@ -36,7 +36,7 @@ class Title(models.Model):
 class Review(models.Model):
     """Описание модели Review."""
 
-    review = models.TextField(max_length=3000)
+    text = models.TextField(max_length=3000)
     score = models.PositiveSmallIntegerField()
     author = models.ForeignKey(
         User, on_delete=models.CASCADE,
@@ -52,6 +52,12 @@ class Review(models.Model):
     )
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title'],
+                name='unique_author_for_a_title'
+            )
+        ]
         ordering = ('pub_date',)
 
     def __str__(self):
