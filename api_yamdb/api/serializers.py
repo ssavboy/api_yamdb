@@ -62,12 +62,25 @@ class ReadOnlyTitleSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """Описание сериализатора для модели Review."""
+
     author = serializers.SlugRelatedField(
-        read_only=True, slug_field='username')
+        slug_field='username',
+        read_only=True,
+    )
+    title = serializers.StringRelatedField()
 
     class Meta:
         model = Review
         fields = '__all__'
+        read_only_fields = ('title',)
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Review.objects.all(),
+                fields=('author', 'title'),
+                message='Можно написать только одну рецензию на произведение.',
+            )
+        ]
 
     def validate(self, data):
         review = Review.objects.filter(
