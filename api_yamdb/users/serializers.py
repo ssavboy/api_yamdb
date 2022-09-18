@@ -19,20 +19,20 @@ class SignUpSerializer(serializers.Serializer):
     email = serializers.EmailField(
         validators=[UniqueValidator(queryset=User.objects.all())])
 
+    def validate_username(self, data):
+        if data.lower() == 'me':
+            raise ValidationError(message='username cannot equal "me".')
+        return data
+
     class Meta:
         model = User
         fields = ('username', 'email')
 
-    def validate_username(self, data):
-        if data == 'me':
-            raise ValidationError(message='username cannot equal "me".')
-        return data
-
 
 class TokenSerializer(serializers.ModelSerializer):
     username = serializers.CharField(required=True)
-    confirm_token = serializers.CharField(required=True)
+    confirmation_code = serializers.CharField(required=True)
 
     class Meta:
         model = User
-        fields = ('username', 'confirm_token')
+        fields = ('username', 'confirmation_code')

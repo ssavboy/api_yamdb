@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
+from django.db.models import Avg
 from rest_framework import viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -8,6 +9,7 @@ from .serializers import GenreSerializer, TitleSerializer
 from .serializers import ReviewSerializer, ReadOnlyTitleSerializer
 from reviews.models import Category, Genre, Title, Review
 from .permissions import IsAdminOrReadOnly, IsAuthorModeratorAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsAdminModeratorOwnerOrReadOnly
 from .filters import TitlesFilter
 from .mixins import ListCreateDestroyViewSet
 
@@ -37,10 +39,12 @@ class CategoriesViewSet(ListCreateDestroyViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет для запросов к объектам Title."""
 
-    queryset = Title.objects.all()
+    queryset = Title.objects.all().annotate(
+        Avg('reviews__score')
+    ).order_by('name')
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = TitlesFilter
 
     def get_serializer_class(self):
@@ -57,6 +61,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         permissions.IsAuthenticatedOrReadOnly,
         IsAuthorModeratorAdminOrReadOnly,
     )
+
 
     def get_title(self):
         """Определение объекта Title, связанного с Review."""
@@ -83,6 +88,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         permissions.IsAuthenticatedOrReadOnly,
         IsAuthorModeratorAdminOrReadOnly
     )
+
 
     def get_review(self):
         """Определение объекта Review, связанного с Comment."""
