@@ -74,6 +74,7 @@ class GenreTitle(models.Model):
 
 class Review(models.Model):
     """Описание модели Review."""
+
     text = models.TextField(max_length=3000)
     score = models.PositiveSmallIntegerField(
         verbose_name='Рейтинг',
@@ -96,6 +97,12 @@ class Review(models.Model):
     )
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title'],
+                name='unique_author_for_a_title'
+            )
+        ]
         ordering = ('pub_date',)
 
     def __str__(self):

@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.serializers import UniqueTogetherValidator
 
 from reviews.models import (
     Category,
@@ -68,27 +67,34 @@ class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True,
+        default=serializers.CurrentUserDefault()
     )
-    title = serializers.StringRelatedField()
+    title = serializers.PrimaryKeyRelatedField(
+        read_only=True, default=1)
 
     class Meta:
         model = Review
         fields = '__all__'
         read_only_fields = ('title',)
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Review.objects.all(),
-                fields=('author', 'title'),
-                message='Можно написать только одну рецензию на произведение.',
-            )
-        ]
 
     def validate_score(self, value):
+        """Оценки принимаются только в интервале от 0 до 10."""
         if value > 10:
             raise serializers.ValidationError(
                 'Оценка произведения должна быть в пределах 10'
             )
         return value
+
+    def validate(self, data):
+        """Проверка существования произведения."""
+        author = self.context['request'].user
+        title_id = self.context['view'].kwargs.get('title_id')
+        if self.context['request'].method == 'POST':
+            if Review.objects.filter(title=title_id, author=author).exists():
+                raise serializers.ValidationError(
+                    'Можно написать только одну рецензию на произведение.'
+                )
+        return data
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -97,8 +103,9 @@ class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True,
+        default=serializers.CurrentUserDefault()
     )
-    review = serializers.StringRelatedField()
+    review = serializers.StringRelatedField(read_only=True,)
 
     class Meta:
         model = Comment

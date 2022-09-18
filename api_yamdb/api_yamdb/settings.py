@@ -108,7 +108,6 @@ REST_FRAMEWORK = {
 }
 
 OUTPUT_LIMIT = 300
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
