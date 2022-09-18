@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 from api_yamdb import settings
 from users.models import User
 
@@ -74,7 +75,13 @@ class GenreTitle(models.Model):
 class Review(models.Model):
     """Описание модели Review."""
     text = models.TextField(max_length=3000)
-    score = models.PositiveSmallIntegerField()
+    score = models.PositiveSmallIntegerField(
+        verbose_name='Рейтинг',
+        validators=[
+            MinValueValidator(1, 'Допустимы значения от 1 до 10'),
+            MaxValueValidator(10, 'Допустимы значения от 1 до 10')
+        ]
+    )
     author = models.ForeignKey(
         User, on_delete=models.CASCADE,
         related_name='reviews'
