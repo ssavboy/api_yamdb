@@ -6,7 +6,7 @@ from .serializers import CategoriesSerializer, CommentSerializer
 from .serializers import GenreSerializer, TitleSerializer
 from .serializers import ReviewSerializer, ReadOnlyTitleSerializer
 from reviews.models import Category, Genre, Title, Review
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsAdminModeratorOwnerOrReadOnly
 from .filters import TitlesFilter
 from .mixins import ListCreateDestroyViewSet
 
@@ -39,7 +39,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = TitlesFilter
 
     def get_serializer_class(self):
@@ -52,7 +52,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для запросов к объектам Review."""
 
     serializer_class = ReviewSerializer
-    queryset = Review.objects.all()
+    permission_classes = (IsAdminModeratorOwnerOrReadOnly,)
 
     def get_title(self):
         """Определение объекта Title, связанного с Review."""
@@ -76,6 +76,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     """Вьюсет для запросов к объектам Comment."""
 
     serializer_class = CommentSerializer
+    permission_classes = (IsAdminModeratorOwnerOrReadOnly,)
 
     def get_review(self):
         """Определение объекта Review, связанного с Comment."""

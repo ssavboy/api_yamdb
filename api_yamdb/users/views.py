@@ -2,11 +2,12 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status, viewsets, permissions
-from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework.views import APIView
 
 from .models import User
 from .permissions import IsAdmin
@@ -62,8 +63,8 @@ class SignUpView(APIView):
 
 class TokenView(APIView):
     permission_classes = (AllowAny,)
+
     def post(self, request):
-        print('------------post------------')
         serializer = TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         confirm_token = serializer.validated_data.get('confirm_token')
