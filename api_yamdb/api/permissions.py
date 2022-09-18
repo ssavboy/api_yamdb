@@ -6,7 +6,6 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         return (request.method in permissions.SAFE_METHODS
                 or (request.user.is_authenticated and (
                     request.user.is_admin or request.user.is_superuser)))
-<<<<<<< HEAD
 
 
 class IsAuthorModeratorAdminOrReadOnly(permissions.BasePermission):
@@ -22,5 +21,3 @@ class IsAuthorModeratorAdminOrReadOnly(permissions.BasePermission):
             or request.user.is_admin
             or request.method in permissions.SAFE_METHODS
         )
-=======
->>>>>>> cca0c517d865d14422d3af979c2de2cc09d0daef

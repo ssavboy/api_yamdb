@@ -87,7 +87,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         """Выбор разрешений исходя из типа запроса"""
         if self.action == 'destroy' or self.action == 'update':
             return (IsAuthorModeratorAdminOrReadOnly(),)
-        return super().get_permissions()  
+        return super().get_permissions()
 
     def get_review(self):
         """Определение объекта Review, связанного с Comment."""

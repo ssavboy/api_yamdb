@@ -7,8 +7,4 @@ class ListCreateDestroyViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-<<<<<<< HEAD
     pass
-=======
-    pass
->>>>>>> cca0c517d865d14422d3af979c2de2cc09d0daef
