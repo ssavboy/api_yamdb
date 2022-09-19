@@ -8,7 +8,7 @@ from .serializers import CategoriesSerializer, CommentSerializer
 from .serializers import GenreSerializer, TitleSerializer
 from .serializers import ReviewSerializer, ReadOnlyTitleSerializer
 from reviews.models import Category, Genre, Title, Review
-from .permissions import IsAdminOrReadOnly, IsAuthorModeratorAdminOrReadOnly
+from .permissions import IsAuthorModeratorAdminOrReadOnly
 from .permissions import IsAdminOrReadOnly
 from .filters import TitlesFilter
 from .mixins import ListCreateDestroyViewSet

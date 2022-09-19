@@ -111,7 +111,7 @@ class Review(models.Model):
 
 class Comment(models.Model):
     """Описание модели Comment."""
-    comment = models.TextField(max_length=3000)
+    text = models.TextField(max_length=3000)
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
