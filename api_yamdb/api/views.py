@@ -9,7 +9,7 @@ from .serializers import GenreSerializer, TitleSerializer
 from .serializers import ReviewSerializer, ReadOnlyTitleSerializer
 from reviews.models import Category, Genre, Title, Review
 from .permissions import IsAdminOrReadOnly, IsAuthorModeratorAdminOrReadOnly
-from .permissions import IsAdminOrReadOnly, IsAdminModeratorOwnerOrReadOnly
+from .permissions import IsAdminOrReadOnly
 from .filters import TitlesFilter
 from .mixins import ListCreateDestroyViewSet
 
@@ -62,7 +62,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         IsAuthorModeratorAdminOrReadOnly,
     )
 
-
     def get_title(self):
         """Определение объекта Title, связанного с Review."""
         return get_object_or_404(Title, pk=self.kwargs.get('title_id'))
@@ -88,7 +87,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         permissions.IsAuthenticatedOrReadOnly,
         IsAuthorModeratorAdminOrReadOnly
     )
-
 
     def get_review(self):
         """Определение объекта Review, связанного с Comment."""
