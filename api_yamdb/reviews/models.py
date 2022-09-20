@@ -1,5 +1,6 @@
+from django.conf import settings
+from django.core.validators import MaxValueValidator
 from django.db import models
-from api_yamdb import settings
 from users.models import User
 
 
@@ -70,57 +71,69 @@ class GenreTitle(models.Model):
         verbose_name = 'Произведение и жанр'
         verbose_name_plural = 'Произведения и жанры'
 
+class TextBase(models.Model):
+    """Абстрактная модель для Review и Comment."""
 
-class Review(models.Model):
-    """Описание модели Review."""
-
-    text = models.TextField(max_length=3000)
-    score = models.PositiveSmallIntegerField()
+    text = models.TextField(
+        verbose_name='Текст'
+    )
     author = models.ForeignKey(
         User, on_delete=models.CASCADE,
-        related_name='reviews'
+        related_name='%(class)s_related',
+        verbose_name='Автор'
+    )
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата создания'
+    )
+
+    class Meta:
+        abstract=True
+        ordering = ('pub_date',)
+    
+    def __str__(self):
+        return self.text[:settings.OUTPUT_LIMIT]
+
+
+    
+class Review(TextBase):
+    """Описание модели Review."""
+
+    score = models.PositiveSmallIntegerField(
+        verbose_name='Оценка',
+        validators=[
+            MaxValueValidator(10)
+        ]
     )
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        related_name='reviews'
-    )
-    pub_date = models.DateTimeField(
-        'Дата создания', auto_now_add=True
+        related_name='reviews',
+        verbose_name='Произведение'
     )
 
-    class Meta:
+    class Meta(TextBase.Meta):
+        verbose_name = 'Рецензия'
+        verbose_name_plural = 'Рецензии'
         constraints = [
             models.UniqueConstraint(
                 fields=['author', 'title'],
                 name='unique_author_for_a_title'
             )
         ]
-        ordering = ('pub_date',)
-
-    def __str__(self):
-        return self.text[:settings.OUTPUT_LIMIT]
 
 
-class Comment(models.Model):
+class Comment(TextBase):
     """Описание модели Comment."""
-    text = models.TextField(max_length=3000)
+
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
-        related_name='comments'
-    )
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='comments'
-    )
-    pub_date = models.DateTimeField(
-        'Дата создания', auto_now_add=True
+        related_name='comments',
+        verbose_name='Рецензия'
     )
 
-    class Meta:
-        ordering = ('pub_date',)
+    class Meta(TextBase.Meta):
+        verbose_name='Комментарий'
+        verbose_name_plural='Комментарии'
 
-    def __str__(self):
-        return self.review[:settings.OUTPUT_LIMIT]
