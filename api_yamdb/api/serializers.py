@@ -69,8 +69,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True,
         default=serializers.CurrentUserDefault()
     )
-    title = serializers.PrimaryKeyRelatedField(
-        read_only=True, default=1)
 
     class Meta:
         model = Review
