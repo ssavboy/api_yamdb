@@ -1,12 +1,11 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import permissions
 from django.db.models import Avg
 from rest_framework import viewsets
 
 from .serializers import CategoriesSerializer, CommentSerializer
 from .serializers import GenreSerializer, TitleSerializer
 from .serializers import ReviewSerializer, ReadOnlyTitleSerializer
-from reviews.models import Category, Genre, Title, Review
+from reviews.models import Category, Comment, Genre, Title, Review
 from .permissions import IsAuthorModeratorAdminOrReadOnly
 from .permissions import IsAdminOrReadOnly
 from .filters import TitlesFilter
@@ -45,19 +44,15 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для запросов к объектам Review."""
 
+    queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
         IsAuthorModeratorAdminOrReadOnly,
     )
 
     def get_title(self):
         """Определение объекта Title, связанного с Review."""
         return get_object_or_404(Title, pk=self.kwargs.get('title_id'))
-
-    def get_queryset(self):
-        """Определение множества объектов Review."""
-        return self.get_title().reviews.select_related('title')
 
     def perform_create(self, serializer):
         """Переопределение метода создания объекта Review."""
@@ -71,9 +66,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """Вьюсет для запросов к объектам Comment."""
 
+    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
         IsAuthorModeratorAdminOrReadOnly
     )
 
@@ -82,13 +77,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         return get_object_or_404(
             Review,
-            pk=self.kwargs.get('review_id'),
-            title=self.kwargs.get('title_id')
+            pk=self.kwargs.get('review_id')
         )
-
-    def get_queryset(self):
-        """Определение множества объектов Comment."""
-        return self.get_review().comments.select_related('review')
 
     def perform_create(self, serializer):
         """Переопределение метода создания объекта Comment."""
