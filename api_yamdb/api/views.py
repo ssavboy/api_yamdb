@@ -1,8 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from django.db.models import Avg
-from rest_framework import viewsets, filters
-from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets
 
 from .serializers import CategoriesSerializer, CommentSerializer
 from .serializers import GenreSerializer, TitleSerializer
@@ -19,10 +18,6 @@ class GenreViewSet(ListCreateDestroyViewSet):
 
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
 
 
 class CategoriesViewSet(ListCreateDestroyViewSet):
@@ -30,22 +25,16 @@ class CategoriesViewSet(ListCreateDestroyViewSet):
 
     queryset = Category.objects.all()
     serializer_class = CategoriesSerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет для запросов к объектам Title."""
 
-    queryset = Title.objects.all().annotate(
-        Avg('reviews__score')
-    ).order_by('name')
+    queryset = Title.objects.all().annotate(Avg('reviews__score'))
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (DjangoFilterBackend,)
     filterset_class = TitlesFilter
+    ordering_fields = ('name',)
 
     def get_serializer_class(self):
         if self.action in ('retrieve', 'list'):

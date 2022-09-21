@@ -45,20 +45,20 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
         fields = '__all__'
 
+    def to_representation(self, instance):
+        return ReadOnlyTitleSerializer(instance).data
+
 
 class ReadOnlyTitleSerializer(serializers.ModelSerializer):
     """Описание сериализатора для 'list' и 'retrieve'"""
-    rating = serializers.IntegerField(
-        source='reviews__score__avg', read_only=True
-    )
+    rating = serializers.IntegerField(read_only=True)
     genre = GenreSerializer(many=True)
     category = CategoriesSerializer()
 
     class Meta:
         model = Title
-        fields = (
-            'id', 'name', 'year', 'rating', 'description', 'genre', 'category'
-        )
+        fields = '__all__'
+        read_only_fields = ('__all__',)
 
 
 class ReviewSerializer(serializers.ModelSerializer):
