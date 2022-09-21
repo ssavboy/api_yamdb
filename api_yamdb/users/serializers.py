@@ -1,11 +1,11 @@
-from django.core.exceptions import ValidationError
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 
 from .models import User
+from .mixins import UsernameValidatorMixin
+from api_yamdb import settings
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer, UsernameValidatorMixin):
     class Meta:
         model = User
         fields = (
@@ -13,24 +13,18 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name', 'bio', 'role')
 
 
-class SignUpSerializer(serializers.Serializer):
-    username = serializers.CharField(
-        validators=[UniqueValidator(queryset=User.objects.all())])
-    email = serializers.EmailField(
-        validators=[UniqueValidator(queryset=User.objects.all())])
-
-    def validate_username(self, data):
-        if data.lower() == 'me':
-            raise ValidationError(message='username cannot equal "me".')
-        return data
+class SignUpSerializer(serializers.Serializer, UsernameValidatorMixin):
+    username = serializers.CharField(max_length=settings.RESTRICT_NAME)
+    email = serializers.EmailField(max_length=settings.RESTRICT_EMAIL)
 
     class Meta:
         model = User
         fields = ('username', 'email')
 
 
-class TokenSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(required=True)
+class TokenSerializer(serializers.Serializer, UsernameValidatorMixin):
+    username = serializers.CharField(
+        required=True, max_length=settings.RESTRICT_NAME)
     confirmation_code = serializers.CharField(required=True)
 
     class Meta:
