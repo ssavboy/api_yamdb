@@ -61,19 +61,10 @@ class Title(models.Model):
     def __str__(self):
         return self.name
 
+
 class TextBase(models.Model):
     """Абстрактная модель для Review и Comment."""
 
-class Review(models.Model):
-    """Описание модели Review."""
-
-    text = models.TextField(max_length=3000)
-    score = models.PositiveSmallIntegerField(
-        verbose_name='Рейтинг',
-        validators=[
-            MinValueValidator(1, 'Допустимы значения от 1 до 10'),
-            MaxValueValidator(10, 'Допустимы значения от 1 до 10')
-        ]
     text = models.TextField(
         verbose_name='Текст'
     )
@@ -88,22 +79,21 @@ class Review(models.Model):
     )
 
     class Meta:
-        abstract=True
+        abstract = True
         ordering = ('pub_date',)
-    
+
     def __str__(self):
         return self.text[:settings.OUTPUT_LIMIT]
 
 
-    
 class Review(TextBase):
     """Описание модели Review."""
 
     score = models.PositiveSmallIntegerField(
-        verbose_name='Оценка',
-        validators=[
-            MaxValueValidator(10)
-        ]
+        validators=(MinValueValidator(1),
+                    MaxValueValidator(10)),
+        error_messages={'validators': 'Оценки могут быть от 1 до 10'},
+        default=1
     )
     title = models.ForeignKey(
         Title,
@@ -134,5 +124,5 @@ class Comment(TextBase):
     )
 
     class Meta(TextBase.Meta):
-        verbose_name='Комментарий'
-        verbose_name_plural='Комментарии'
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
