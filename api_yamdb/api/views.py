@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import permissions
 from django.db.models import Avg
 from rest_framework import viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend
