@@ -52,7 +52,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
 class ReadOnlyTitleSerializer(serializers.ModelSerializer):
     """Описание сериализатора для 'list' и 'retrieve'"""
-    rating = serializers.IntegerField(read_only=True)
+    rating = serializers.IntegerField(default=0)
     genre = GenreSerializer(many=True)
     category = CategoriesSerializer()
 
