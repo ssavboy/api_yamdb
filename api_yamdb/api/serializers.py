@@ -1,5 +1,6 @@
+from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework import serializers
-
 from reviews.models import (
     Category,
     Comment,
@@ -69,19 +70,17 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True,
         default=serializers.CurrentUserDefault()
     )
+    score = serializers.IntegerField(
+        validators=[
+            MinValueValidator(settings.MIN_SCORE_VALUE),
+            MaxValueValidator(settings.MAX_SCORE_VALUE),
+        ]
+    )
 
     class Meta:
         model = Review
         fields = '__all__'
         read_only_fields = ('title',)
-
-    def validate_score(self, value):
-        """Оценки принимаются только в интервале от 0 до 10."""
-        if value > 10:
-            raise serializers.ValidationError(
-                'Оценка произведения должна быть в пределах 10'
-            )
-        return value
 
     def validate(self, data):
         """Проверка существования произведения."""
