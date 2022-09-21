@@ -34,21 +34,21 @@ class Command(BaseCommand):
 
         print("Loading categories data")
         with open('static/data/category.csv', encoding='utf8') as input_file:
-            input_file_without_header = input_file.readlines()[1:]
+            input_file_without_header = input_file.read().splitlines[1:]
             for row in input_file_without_header:
                 category = Category(*row.split(','))
                 category.save()
 
         print("Loading genres data")
         with open('static/data/genre.csv', encoding='utf8') as input_file:
-            input_file_without_header = input_file.readlines()[1:]
+            input_file_without_header = input_file.read().splitlines[1:]
             for row in input_file_without_header:
                 genre = Genre(*row.split(','))
                 genre.save()
 
         print("Loading users data")
         with open('static/data/users.csv', encoding='utf8') as input_file:
-            input_file_without_header = input_file.readlines()[1:]
+            input_file_without_header = input_file.read().splitlines[1:]
             for row in input_file_without_header:
                 (
                     id,
@@ -72,7 +72,7 @@ class Command(BaseCommand):
 
         print("Loading titles data")
         with open('static/data/titles.csv', encoding='utf8') as input_file:
-            input_file_without_header = input_file.readlines()[1:]
+            input_file_without_header = input_file.read().splitlines[1:]
             for row in input_file_without_header:
                 id, name, year, id_category = row.split(',')
                 category = Category.objects.get(pk=id_category)
@@ -86,7 +86,7 @@ class Command(BaseCommand):
 
         print("Loading reviews data")
         with open('static/data/review.csv', encoding='utf8') as input_file:
-            input_file_without_header = input_file.readlines()[1:5]
+            input_file_without_header = input_file.read().splitlines[1:5]
             for row in input_file_without_header:
                 if '"' in row:
                     opening_quotation = row.index('"')
@@ -109,7 +109,7 @@ class Command(BaseCommand):
 
         print("Loading comments data")
         with open('static/data/comments.csv', encoding='utf8') as input_file:
-            input_file_without_header = input_file.readlines()[1:5]
+            input_file_without_header = input_file.read().splitlines[1:5]
             for row in input_file_without_header:
                 if '"' in row:
                     opening_quotation = row.index('"')
