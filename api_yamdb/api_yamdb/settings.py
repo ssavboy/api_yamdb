@@ -98,8 +98,6 @@ AUTH_USER_MODEL = 'users.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
-DEFAULT_FROM_EMAIL = 'yamdb@mail.com'
-
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 REST_FRAMEWORK = {
@@ -121,3 +119,4 @@ RESTRICT_NAME = 150
 RESTRICT_EMAIL = 254
 MIN_SCORE_VALUE = 0
 MAX_SCORE_VALUE = 10
+FROM_EMAIL = 'yamdb@mail.com'

@@ -1,6 +1,9 @@
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework import serializers
+
+from users.models import User
+from users.mixins import UsernameValidatorMixin
 from reviews.models import (
     Category,
     Comment,
@@ -8,6 +11,33 @@ from reviews.models import (
     Review,
     Title
 )
+
+
+class UserSerializer(serializers.ModelSerializer, UsernameValidatorMixin):
+    class Meta:
+        model = User
+        fields = (
+            'username', 'email', 'first_name',
+            'last_name', 'bio', 'role')
+
+
+class SignUpSerializer(serializers.Serializer, UsernameValidatorMixin):
+    username = serializers.CharField(max_length=settings.RESTRICT_NAME)
+    email = serializers.EmailField(max_length=settings.RESTRICT_EMAIL)
+
+    class Meta:
+        model = User
+        fields = ('username', 'email')
+
+
+class TokenSerializer(serializers.Serializer, UsernameValidatorMixin):
+    username = serializers.CharField(
+        required=True, max_length=settings.RESTRICT_NAME)
+    confirmation_code = serializers.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'confirmation_code')
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
