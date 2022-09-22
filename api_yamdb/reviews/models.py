@@ -6,6 +6,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from users.models import User
 from .validators import validate_year
 
+
 class CategoryGenre(models.Model):
     name = models.CharField(
         'Название',
@@ -15,6 +16,7 @@ class CategoryGenre(models.Model):
         'Идентификатор',
         max_length=settings.MAX_LIMIT_CATEGORYGENRY_SLUG, unique=True
     )
+
 
 class CategoryGenre(models.Model):
     name = models.CharField(

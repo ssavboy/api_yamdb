@@ -21,7 +21,6 @@ class TitleAdmin(admin.ModelAdmin):
     ]
 
 
-
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('pk', 'review', 'text', 'author', 'pub_date',)
     search_fields = ('review', 'text', 'author', 'pub_date',)
