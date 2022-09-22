@@ -114,6 +114,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filterset_class = TitlesFilter
+    filterset_fields = ('genre__slug')
 
     def get_serializer_class(self):
         if self.action in ('retrieve', 'list'):
