@@ -4,7 +4,7 @@ from django.db import IntegrityError
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db.models import Avg
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -113,8 +113,9 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all().annotate(rating=Avg('reviews__score'))
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    filterset_class = (filters.OrderingFilter,)
+    ordering_fields = ('name',)
     filterset_class = TitlesFilter
-    filterset_fields = ('genre__slug')
 
     def get_serializer_class(self):
         if self.action in ('retrieve', 'list'):
