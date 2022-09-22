@@ -16,6 +16,10 @@ class TitleAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'year', 'description')
     search_fields = ('name', 'year')
     list_filter = ('category',)
+    inlines = [
+        GenreAdmin,
+    ]
+
 
 
 class CommentAdmin(admin.ModelAdmin):

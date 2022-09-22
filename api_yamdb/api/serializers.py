@@ -114,9 +114,9 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Проверка существования произведения."""
-        author = self.context['request'].user
-        title_id = self.context['view'].kwargs.get('title_id')
         if self.context['request'].method == 'POST':
+            title_id = self.context['view'].kwargs.get('title_id')
+            author = self.context['request'].user
             if Review.objects.filter(title=title_id, author=author).exists():
                 raise serializers.ValidationError(
                     'Можно написать только одну рецензию на произведение.'
@@ -132,7 +132,6 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only=True,
         default=serializers.CurrentUserDefault()
     )
-    review = serializers.StringRelatedField(read_only=True,)
 
     class Meta:
         model = Comment

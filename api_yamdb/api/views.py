@@ -141,11 +141,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Переопределение метода создания объекта Review."""
-        if serializer.is_valid:
-            serializer.save(
-                author=self.request.user,
-                title=self.get_title()
-            )
+        serializer.save(
+            author=self.request.user,
+            title=self.get_title()
+        )
 
 
 class CommentViewSet(viewsets.ModelViewSet):

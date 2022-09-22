@@ -1,12 +1,20 @@
 from django.conf import settings
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-
 
 from users.models import User
 from .validators import validate_year
 
+class CategoryGenre(models.Model):
+    name = models.CharField(
+        'Название',
+        max_length=settings.MAX_LIMIT_CATEGORYGENRY_NAME
+    )
+    slug = models.SlugField(
+        'Идентификатор',
+        max_length=settings.MAX_LIMIT_CATEGORYGENRY_SLUG, unique=True
+    )
 
 class CategoryGenre(models.Model):
     name = models.CharField(
@@ -70,7 +78,7 @@ class Title(models.Model):
         return self.name
 
 
-class TextBase(models.Model):
+class ReviewComment(models.Model):
     """Абстрактная модель для Review и Comment."""
 
     text = models.TextField(
@@ -78,7 +86,6 @@ class TextBase(models.Model):
     )
     author = models.ForeignKey(
         User, on_delete=models.CASCADE,
-        related_name='%(class)s_related',
         verbose_name='Автор'
     )
     pub_date = models.DateTimeField(
@@ -94,12 +101,13 @@ class TextBase(models.Model):
         return self.text[:settings.OUTPUT_LIMIT]
 
 
-class Review(TextBase):
+class Review(ReviewComment):
     """Описание модели Review."""
 
     score = models.PositiveSmallIntegerField(
-        validators=(MinValueValidator(1),
-                    MaxValueValidator(10)),
+        validators=(MinValueValidator(settings.MIN_SCORE_VALUE),
+                    MaxValueValidator(settings.MAX_SCORE_VALUE)),
+
         error_messages={'validators': 'Оценки могут быть от 1 до 10'},
         default=1
     )
@@ -110,7 +118,7 @@ class Review(TextBase):
         verbose_name='Произведение'
     )
 
-    class Meta(TextBase.Meta):
+    class Meta(ReviewComment.Meta):
         verbose_name = 'Рецензия'
         verbose_name_plural = 'Рецензии'
         constraints = [
@@ -119,9 +127,10 @@ class Review(TextBase):
                 name='unique_author_for_a_title'
             )
         ]
+        default_related_name = 'reviews'
 
 
-class Comment(TextBase):
+class Comment(ReviewComment):
     """Описание модели Comment."""
 
     review = models.ForeignKey(
@@ -131,6 +140,7 @@ class Comment(TextBase):
         verbose_name='Рецензия'
     )
 
-    class Meta(TextBase.Meta):
+    class Meta(ReviewComment.Meta):
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+        default_related_name = 'comments'
