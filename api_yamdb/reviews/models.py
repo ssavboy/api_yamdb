@@ -2,7 +2,6 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-from api_yamdb import settings
 
 
 from users.models import User
@@ -10,8 +9,14 @@ from .validators import validate_year
 
 
 class CategoryGenre(models.Model):
-    name = models.CharField('Название', max_length=256)
-    slug = models.SlugField('Идентификатор', max_length=50, unique=True)
+    name = models.CharField(
+        'Название',
+        max_length=settings.MAX_LIMIT_CATEGORYGENRY_NAME
+    )
+    slug = models.SlugField(
+        'Идентификатор',
+        max_length=settings.MAX_LIMIT_CATEGORYGENRY_SLUG, unique=True
+    )
 
     class Meta:
         abstract = True
@@ -36,14 +41,17 @@ class Genre(CategoryGenre):
 
 
 class Title(models.Model):
-    name = models.TextField('Название', max_length=200)
+    name = models.TextField(
+        'Название',
+        max_length=settings.MAX_LIMIT_TITLE
+    )
     year = models.PositiveSmallIntegerField(
         'Год выпуска',
         validators=(validate_year,),
         db_index=True
     )
     description = models.TextField(
-        'Описание', max_length=200, null=True, blank=True
+        'Описание', max_length=settings.MAX_LIMIT_TITLE, null=True, blank=True
     )
     genre = models.ManyToManyField(Genre, verbose_name='Жанр')
     category = models.ForeignKey(
