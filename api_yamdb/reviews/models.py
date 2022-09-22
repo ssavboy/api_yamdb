@@ -1,10 +1,20 @@
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from users.models import User
 from .validators import validate_year
 
+class CategoryGenre(models.Model):
+    name = models.CharField(
+        'Название',
+        max_length=settings.MAX_LIMIT_CATEGORYGENRY_NAME
+    )
+    slug = models.SlugField(
+        'Идентификатор',
+        max_length=settings.MAX_LIMIT_CATEGORYGENRY_SLUG, unique=True
+    )
 
 class CategoryGenre(models.Model):
     name = models.CharField(
@@ -97,6 +107,7 @@ class Review(ReviewComment):
     score = models.PositiveSmallIntegerField(
         validators=(MinValueValidator(settings.MIN_SCORE_VALUE),
                     MaxValueValidator(settings.MAX_SCORE_VALUE)),
+
         error_messages={'validators': 'Оценки могут быть от 1 до 10'},
         default=1
     )

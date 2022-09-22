@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from api_yamdb import settings
+from django.conf import settings
 from .mixins import UsernameValidatorMixin
 
 USER = 'user'
@@ -11,10 +11,6 @@ MODERATOR = 'moderator'
 ROLES = ((USER, 'User'),
          (ADMIN, 'Moderator'),
          (MODERATOR, 'Admin'))
-
-role_max_length = 0
-for i in ROLES:
-    role_max_length += len(i[1])
 
 
 class User(AbstractUser, UsernameValidatorMixin):
@@ -38,7 +34,7 @@ class User(AbstractUser, UsernameValidatorMixin):
         blank=True,
         null=True)
     role = models.CharField(
-        max_length=role_max_length,
+        max_length=max([len(value) for key, value in ROLES]),
         choices=ROLES,
         default=USER,
         blank=True)
