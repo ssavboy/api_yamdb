@@ -19,9 +19,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_filters',
     'reviews',
-    'api',
     'users.apps.UsersConfig',
-
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -98,8 +97,6 @@ AUTH_USER_MODEL = 'users.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
-DEFAULT_FROM_EMAIL = 'yamdb@mail.com'
-
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 REST_FRAMEWORK = {
@@ -119,5 +116,9 @@ SIMPLE_JWT = {
 OUTPUT_LIMIT = 300
 RESTRICT_NAME = 150
 RESTRICT_EMAIL = 254
-MIN_SCORE_VALUE = 0
+MAX_LIMIT_CATEGORYGENRY_NAME = 256
+MAX_LIMIT_CATEGORYGENRY_SLUG = 50
+MAX_LIMIT_TITLE = 200
+MIN_SCORE_VALUE = 1
 MAX_SCORE_VALUE = 10
+FROM_EMAIL = 'yamdb@mail.com'

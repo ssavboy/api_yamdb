@@ -1,6 +1,9 @@
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework import serializers
+
+from users.models import User
+from users.mixins import UsernameValidatorMixin
 from reviews.models import (
     Category,
     Comment,
@@ -8,6 +11,33 @@ from reviews.models import (
     Review,
     Title
 )
+
+
+class UserSerializer(serializers.ModelSerializer, UsernameValidatorMixin):
+    class Meta:
+        model = User
+        fields = (
+            'username', 'email', 'first_name',
+            'last_name', 'bio', 'role')
+
+
+class SignUpSerializer(serializers.Serializer, UsernameValidatorMixin):
+    username = serializers.CharField(max_length=settings.RESTRICT_NAME)
+    email = serializers.EmailField(max_length=settings.RESTRICT_EMAIL)
+
+    class Meta:
+        model = User
+        fields = ('username', 'email')
+
+
+class TokenSerializer(serializers.Serializer, UsernameValidatorMixin):
+    username = serializers.CharField(
+        required=True, max_length=settings.RESTRICT_NAME)
+    confirmation_code = serializers.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'confirmation_code')
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
@@ -46,20 +76,20 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
         fields = '__all__'
 
+    def to_representation(self, instance):
+        return ReadOnlyTitleSerializer(instance).data
+
 
 class ReadOnlyTitleSerializer(serializers.ModelSerializer):
     """Описание сериализатора для 'list' и 'retrieve'"""
-    rating = serializers.IntegerField(
-        source='reviews__score__avg', read_only=True
-    )
+    rating = serializers.IntegerField(read_only=True)
     genre = GenreSerializer(many=True)
     category = CategoriesSerializer()
 
     class Meta:
         model = Title
-        fields = (
-            'id', 'name', 'year', 'rating', 'description', 'genre', 'category'
-        )
+        fields = '__all__'
+        read_only_fields = ('__all__',)
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -84,9 +114,9 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Проверка существования произведения."""
-        author = self.context['request'].user
-        title_id = self.context['view'].kwargs.get('title_id')
         if self.context['request'].method == 'POST':
+            title_id = self.context['view'].kwargs.get('title_id')
+            author = self.context['request'].user
             if Review.objects.filter(title=title_id, author=author).exists():
                 raise serializers.ValidationError(
                     'Можно написать только одну рецензию на произведение.'
@@ -102,7 +132,6 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only=True,
         default=serializers.CurrentUserDefault()
     )
-    review = serializers.StringRelatedField(read_only=True,)
 
     class Meta:
         model = Comment
